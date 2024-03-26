@@ -28,26 +28,23 @@ class Carta {
         string nombre;
         float valor;
 
-    Carta(string nombre, float valor) {
-        this->nombre = std::move(nombre);
+    Carta() : valor(0.0f) {}  // default constructor
+
+    Carta(float valor) {
         this->valor = valor;
+        if (valor == 1) {
+            nombre = "As";
+        } else if (valor == 8) {
+            nombre = "Sota";
+        } else if (valor == 9) {
+            nombre = "Caballo";
+        } else if (valor == 10) {
+            nombre = "Rey";
+        } else {
+            nombre = to_string(valor);
+        }
     }
 };
-
-Carta getCarta() {
-    int n = rand() % 10 + 1;
-    if (n == 1) {
-        return {"As", 1};
-    } else if (n == 8) {
-        return {"Sota", 0.5};
-    } else if (n == 9) {
-        return {"Caballo", 0.5};
-    } else if (n == 10) {
-        return {"Rey", 0.5};
-    } else {
-        return {to_string(n), static_cast<float>(n)};
-    }
-}
 
 int main(int argc, char* argv[]) {  // proceso sietymedio
     if (argc != 2) {
@@ -55,46 +52,69 @@ int main(int argc, char* argv[]) {  // proceso sietymedio
         return 1;
     }
     int N = stoi(argv[1]);
-    int fd[2];  // file descriptors for the pipe
-    pipe(fd);  // create the pipe
+    int fd1[2];  // pipe file descriptors for the dealer pipe
+    if (pipe(fd1) == -1) {
+        cerr << "Error al crear el pipe." << endl;
+        return 1;
+    }
+    int fd2[2];  // file descriptors for the player pipe
+    if (pipe(fd2) == -1) {
+        cerr << "Error al crear el pipe." << endl;
+        return 1;
+    }
+
+    pid_t pid;
 
     for (int i = 0; i < N; ++i) {
-        if (fork() == 0) {  // fork() == 0 when it's the child process
-            close(fd[0]);  // close the read end of the pipe
-            write(fd[1], &i, sizeof(i));  // write the child process number to the pipe
-            close(fd[1]);  // close the write end of the pipe
-
+        pid = fork();
+        if (pid == 0) {  // fork() == 0 when it's the child process
             float puntos = 0;
-            bool plantado = false;
-            while (!plantado) {
-                Carta carta = getCarta();
-                cout << "Jugador " << i << " obtuvo la carta " << carta.nombre << " con valor " << carta.valor << endl;
-                puntos += carta.valor;
-                cout << "Jugador " << i << " tiene " << puntos << " puntos." << endl;
+            bool enJuego = true;
 
-                if (puntos >= 7.5) {
-                    cout << "Jugador " << i << " se pasó de 7.5" << endl;
-                    plantado = true;
+            int request = 1;  // request the initial card
+            write(fd2[1], &request, sizeof(request));
+
+            int cardNumber;
+            read(fd1[0], &cardNumber, sizeof(cardNumber));  // read the card from the pipe
+
+            Carta carta = Carta(cardNumber);
+
+            cout << "Jugador " << i << " obtuvo la carta " << carta.nombre << " con valor " << carta.valor << "." << endl;
+            puntos += carta.valor;
+
+            /*
+            while (enJuego) {
+                int decision = rand() % 3;  // 0: pedir carta, 1: plantarse, 2: abandonar
+                if (puntos > 7.5 || decision == 2) {
+                    enJuego = false;
+                    cout << "Jugador " << i << " ha abandonado con " << puntos << " puntos." << endl;
+                } else if (decision == 1) {
+                        enJuego = false;
+                        cout << "Jugador " << i << " se ha plantado con " << puntos << " puntos." << endl;
                 } else {
-                    int decision = rand() % 3;
-                    if (decision == 0) {
-                        cout << "Jugador " << i << " se planta." << endl;
-                        plantado = true;
-                    } else if (decision == 1) {
-                        cout << "Jugador " << i << " pide otra carta." << endl;
-                    } else {
-                        cout << "Jugador " << i << " abandona." << endl;
-                        plantado = true;
-                    }
+                    request = 1;  // request a card
+                    write(fd2[1], &request, sizeof(request));
+                    read(fd1[0], &carta, sizeof(carta));  // read the card from the pipe
+                    cout << "Jugador " << i << " obtuvo la carta " << carta.nombre << " con valor " << carta.valor
+                         << "." << endl;
+                    puntos += carta.valor;
                 }
-            }
+            }*/
 
+            cout << "---------------------------------------------------------" << endl;
             return 0;
         } else {  // parent process
-            close(fd[1]);  // close the write end of the pipe
-            int child_number;
-            read(fd[0], &child_number, sizeof(child_number));  // read the child process number from the pipe
-            cout << "Jugador " << child_number << " creado." << endl;
+            // read the request from the pipe
+            int request;
+            read(fd2[0], &request, sizeof(request));
+
+            // if a card is requested, generate a card and write it to the pipe
+            if (request == 1) {
+                int cardNumber = rand() % 10 + 1;
+                write(fd1[1], &cardNumber, sizeof(cardNumber));
+            }
         }
     }
+    close(fd1[1]); // close the write end of the pipe
+    close(fd2[1]); // close the write end of the pipe
 }
