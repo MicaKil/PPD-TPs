@@ -19,45 +19,68 @@
 
 int main(int argc, char *argv[]) {
 	if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
-		std::cerr << "Error al inicializar MPI" << std::endl;
+		std::cerr << "Error al inicializar MPI." << std::endl;
 		return 1;
 	}
-	char exercise;
-	// check if an argument was given
-	if (argc > 1) {
-		// parse the argument
-		exercise = argv[1][0];
-		if (exercise != 'a' && exercise != 'b') {
-			std::cerr << "Error: Argumento inválido. Debe ser 'a' o 'b'." << std::endl;
-			MPI_Finalize();
-			return 1;
-		}
-	}
+
+
 	int size, rank, new_rank;
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	// check if size is multiple of 4
-	if (size % 4 != 0) {
+	if (size / 16 != 1) {
 		if (rank == 0) {
-			std::cerr << "Error: Se requiere un múltiplo de 4 para este ejercicio." << std::endl;
+			std::cerr << "Error: Se requieren 16 procesos para este ejercicio." << std::endl;
 		}
 		MPI_Finalize();
 		return 0;
 	}
 
+	// check if an argument was given
+	if (argc <= 1) {
+		if (rank == 0)
+			std::cerr << "Error: Se requiere un argumento [a/b] para este ejercicio." << std::endl;
+		MPI_Finalize();
+		return 1;
+	}
+
+	char exercise;
+	// parse the argument
+	exercise = argv[1][0];
+	if (exercise != 'a' && exercise != 'b') {
+		if (rank == 0)
+			std::cerr << "Error: Argumento inválido. Debe ser 'a' o 'b'." << std::endl;
+		MPI_Finalize();
+		return 1;
+	}
+
+
+
+
 	//assign gray color to the processes in even rows
-	int color;
+	int color, key;
 
 	if (exercise == 'a')
-		color = (rank / 4) % 2 ? 1 : 0; // 0 for gray, 1 for white
+		if (rank < 4 || (rank >= 8 && rank < 12)) {
+			color = 0;  // gray
+			key = -rank;
+		}
+		else {
+			color = 1;
+			key = rank;
+		}
 	else
-		color = (rank / 4) % 2 ? 1 : 0; // 0 for gray, 1 for white
+		if (rank < 4 || (rank >= 8 && rank < 12))
+			color = 0;  // gray
+		else
+			color = 1;
+		// get even number in first row, odd in second, and so on
 
 	//create new communicator
 	MPI_Comm new_comm;
 	//split the communicator
-	MPI_Comm_split(MPI_COMM_WORLD, color, -rank, &new_comm);  // split the communicator in two groups, one for gray and one for white
+	MPI_Comm_split(MPI_COMM_WORLD, color, key, &new_comm);  // split the communicator in two groups, one for gray and one for white
 	//get the new rank
 	MPI_Comm_rank(new_comm, &new_rank);
 
@@ -65,12 +88,15 @@ int main(int argc, char *argv[]) {
 	MPI_Gather(&new_rank, 1, MPI_INT, results.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
 
 	MPI_Barrier(MPI_COMM_WORLD);
+	std::cout << "Rank original: " << rank << ". Color: " << ((color == 0) ? "Gris" : "Blanco") << ". Nuevo rank: " << new_rank << std::endl;
+
 	if (rank == 0) {
-        for (int i = 0; i < size; ++i) {
-            std::cout << "Rank original: " << i << ". Color: " << ((color == 0) ? "Blanco" : "Gris") << ". Nuevo rank: " << results[i] << std::endl;
-        }
-        std::cout << std::endl;
-    }
+		std::cout << "Resultados:" << std::endl;
+		for (int i = 0; i < size; ++i) {
+			std::cout << "Rank original: " << i << ". Color: " << ((color == 0) ? "Gris" : "Blanco") << ". Nuevo rank: " << results[i] << std::endl;
+		}
+		std::cout << std::endl;
+	}
 
 	MPI_Finalize();
 	return 0;
