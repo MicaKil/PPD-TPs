@@ -2,11 +2,25 @@
  * Del Longo, Micaela
  * 8 de mayo de 2024
  *
+ * Para compilar se utiliza cmake, para ello se deben seguir los siguientes pasos:
+ * 1. En la carpeta raíz del proyecto, crear una carpeta donde se almacenarán los archivos generados por cmake: mkdir <build>
+ * 2. Moverse a la carpeta creada: cd <build>
+ * 3. Ejecutar cmake: cmake ..
+ * 4. Compilar el proyecto: cmake --build .
+ *
+ * Para este ejercicio se requieren exactamente dos procesos.
+ *
+ * Para ejecutar el programa dentro de la carpeta <build> se debe ejecutar el siguiente comando:
+ * mpirun -n 2 -oversubscribe TP3exercise4
+ *
+ * Ejercicio 4:
+ *
  * Escribir un programa en MPI que implemente un “ping-pong”, esto es, un programa en el que un proceso envía un mensaje
  * a otro y este último lo devuelve inmediatamente al primero. Utilizar la función MPI_Wtime para calcular cuánto
  * tiempo se invierte en esta operación. */
 
 #include <mpi.h>
+#include <iostream>
 
 int main(int argc, char *argv[]) {
 	if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
@@ -23,7 +37,7 @@ int main(int argc, char *argv[]) {
 
 	if (size != 2) {
 		if (rank == 0)
-			std::cerr << "Se necesitan exactamente 2 procesos para este ejercicio." << std::endl;
+			std::cerr << "Error: Se necesitan exactamente 2 procesos para este ejercicio." << std::endl;
 		MPI_Finalize();
 		return 0;
 	}

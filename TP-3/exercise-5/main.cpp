@@ -2,6 +2,21 @@
  * Del Longo, Micaela
  * 8 de mayo de 2024
  *
+ * Para compilar se utiliza cmake, para ello se deben seguir los siguientes pasos:
+ * 1. En la carpeta raíz del proyecto, crear una carpeta donde se almacenarán los archivos generados por cmake: mkdir <build>
+ * 2. Moverse a la carpeta creada: cd <build>
+ * 3. Ejecutar cmake: cmake ..
+ * 4. Compilar el proyecto: cmake --build .
+ *
+ * Para este ejercicio se requieren exactamente 16 procesos.
+ *
+ * Para ejecutar el programa dentro de la carpeta <build> se debe ejecutar el siguiente comando:
+ * mpirun -n 16 -oversubscribe TP3exercise5 <a/b>
+ *
+ * Donde el argumento 'a' o 'b' indica el ejercicio a ejecutar.
+ *
+ * Ejercicio 5:
+ *
  * Dada la malla de procesos que se muestra a continuación, en la que cada proceso aparece con su rango en el
  * comunicador MPI_COMM_WORLD. Escribir una única llamada a MPI_Comm_Split que permita obtener un nuevo comunicador
  * (new_comm) que incluya a los procesos que aparecen con fondo gris en la figura, pero cuyos rangos se ordenen de forma

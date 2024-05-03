@@ -2,6 +2,19 @@
  * Del Longo, Micaela
  * 8 de mayo de 2024
  *
+ * Para compilar se utiliza cmake, para ello se deben seguir los siguientes pasos:
+ * 1. En la carpeta raíz del proyecto, crear una carpeta donde se almacenarán los archivos generados por cmake: mkdir <build>
+ * 2. Moverse a la carpeta creada: cd <build>
+ * 3. Ejecutar cmake: cmake ..
+ * 4. Compilar el proyecto: cmake --build .
+ *
+ * Para este ejercicio se requieren al menos tres procesos, uno para el proceso maestro y dos para los procesos trabajadores.
+ *
+ * Para ejecutar el programa dentro de la carpeta <build> se debe ejecutar el siguiente comando:
+ * mpirun -n <Núm. de procesos> --oversubscribe TP3exercise6
+ *
+ * Ejercicio 6:
+ *
  * Se deberá desarrollar una aplicación que simule partidas de siete y medio entre N jugadores. Esta aplicación estará
  * compuesta por varios procesos, y seguirá un esquema cliente/servidor, donde los procesos clientes serán los
  * jugadores, y el proceso servidor, se encargará de distribuir las cartas, recoger las decisiones de los jugadores,
@@ -84,6 +97,8 @@ std::string get_card_name(int card) {
 			return "Caballo";
 		case 10:
 			return "Rey";
+		default:
+			return "0";  // no debería llegar acá -> se deja por prolijidad
 	}
 }
 
