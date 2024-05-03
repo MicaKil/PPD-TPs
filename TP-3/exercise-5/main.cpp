@@ -1,4 +1,8 @@
-/*Dada la malla de procesos que se muestra a continuación, en la que cada proceso aparece con su rango en el
+/* Programación Paralela y Distribuida, Lic. en Ciencias de la Computación, Facultad de Ingeniería, Universidad Nacional de Cuyo
+ * Del Longo, Micaela
+ * 8 de mayo de 2024
+ *
+ * Dada la malla de procesos que se muestra a continuación, en la que cada proceso aparece con su rango en el
  * comunicador MPI_COMM_WORLD. Escribir una única llamada a MPI_Comm_Split que permita obtener un nuevo comunicador
  * (new_comm) que incluya a los procesos que aparecen con fondo gris en la figura, pero cuyos rangos se ordenen de forma
  * inversamente proporcional al rango que tenían en el comunicador original. Utilizar el menor número de órdenes posible.

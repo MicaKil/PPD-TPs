@@ -1,4 +1,8 @@
-/*Escribir un programa en MPI que implemente el clásico “Hola Mundo!” y además de saludar indique en qué nodo se
+/* Programación Paralela y Distribuida, Lic. en Ciencias de la Computación, Facultad de Ingeniería, Universidad Nacional de Cuyo
+ * Del Longo, Micaela
+ * 8 de mayo de 2024
+ *
+ * Escribir un programa en MPI que implemente el clásico “Hola Mundo!” y además de saludar indique en qué nodo se
  * está ejecutando. */
 
 #include <mpi.h>

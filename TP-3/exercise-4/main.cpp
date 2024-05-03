@@ -1,4 +1,8 @@
-/*Escribir un programa en MPI que implemente un “ping-pong”, esto es, un programa en el que un proceso envía un mensaje
+/* Programación Paralela y Distribuida, Lic. en Ciencias de la Computación, Facultad de Ingeniería, Universidad Nacional de Cuyo
+ * Del Longo, Micaela
+ * 8 de mayo de 2024
+ *
+ * Escribir un programa en MPI que implemente un “ping-pong”, esto es, un programa en el que un proceso envía un mensaje
  * a otro y este último lo devuelve inmediatamente al primero. Utilizar la función MPI_Wtime para calcular cuánto
  * tiempo se invierte en esta operación. */
 

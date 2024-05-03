@@ -1,4 +1,8 @@
-/*Se deberá desarrollar una aplicación que simule partidas de siete y medio entre N jugadores. Esta aplicación estará
+/* Programación Paralela y Distribuida, Lic. en Ciencias de la Computación, Facultad de Ingeniería, Universidad Nacional de Cuyo
+ * Del Longo, Micaela
+ * 8 de mayo de 2024
+ *
+ * Se deberá desarrollar una aplicación que simule partidas de siete y medio entre N jugadores. Esta aplicación estará
  * compuesta por varios procesos, y seguirá un esquema cliente/servidor, donde los procesos clientes serán los
  * jugadores, y el proceso servidor, se encargará de distribuir las cartas, recoger las decisiones de los jugadores,
  * y así hasta que se declare un ganador.
